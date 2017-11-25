@@ -1,6 +1,9 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { getMetricMetaInfo } from '../util/helpers'
+import UdaciSlider from './UdaciSlider'
+import UdaciStepper from './UdaciStepper'
+
 
 export default class AddEntry extends React.Component {
   //steps initialized to 0
@@ -45,9 +48,31 @@ export default class AddEntry extends React.Component {
   }
 
   render() {
+    const metaInfo = getMetricMetaInfo()
     return (
       <View>
-        {getMetricMetaInfo('bike').getIcon() }
+        {Object.keys(metaInfo).map((key) => {
+          const { getIcon, type, ...rest} = metaInfo[key]
+          const value = this.state[key]
+          return (
+            <View key={key}>
+              {getIcon()}
+              {type === 'slider'
+                ? <UdaciSlider 
+                    value={value} 
+                    onChange={(value) => this.slide(key, value)}
+                    {...rest} 
+                  />
+                : <UdaciStepper 
+                    value={value}
+                    onIncrement={(key)=> this.increment(key)}
+                    onDecrement={(key)=> this.decrement(key)}
+                    {...rest}
+                />
+              }
+            </View>
+          )
+        })}
       </View>
     )
   }
