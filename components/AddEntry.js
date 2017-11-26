@@ -82,8 +82,8 @@ export default class AddEntry extends React.Component {
                   />
                 : <UdaciStepper 
                     value={value}
-                    onIncrement={(key)=> this.increment(key)}
-                    onDecrement={(key)=> this.decrement(key)}
+                    onIncrement={()=> this.increment(key)}
+                    onDecrement={()=> this.decrement(key)}
                     {...rest}
                 />
               }
