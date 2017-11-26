@@ -4,7 +4,8 @@ import { getMetricMetaInfo, timeToString  } from '../util/helpers'
 import UdaciSlider from './UdaciSlider'
 import UdaciStepper from './UdaciStepper'
 import DateHeader from './DateHeader'
-
+import {Ionicons } from '@expo/vector-icons'
+import TextButton from './TextButton'
 
 export default class AddEntry extends React.Component {
   //steps initialized to 0
@@ -63,8 +64,32 @@ export default class AddEntry extends React.Component {
      // Clear local notification
    }
 
+   reset = () => {
+     const key = timeToString()
+     // update redux
+
+     //route to home
+
+     //update database
+   }
+
   render() {
     const metaInfo = getMetricMetaInfo()
+    if (this.props.alreadyLogged) {
+      return (
+        <View>
+          <Ionicons
+            name='ios-happy-outline'
+            size={100}
+          />
+          <Text>You already logged information for today</Text>
+          
+          <TextButton onPress={this.reset}>
+            Reset
+          </TextButton>
+        </View>
+      )
+    }
     return (
       <View>
         <DateHeader date={(new Date()).toLocaleDateString()} />
