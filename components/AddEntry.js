@@ -6,6 +6,7 @@ import UdaciStepper from './UdaciStepper'
 import DateHeader from './DateHeader'
 import {Ionicons } from '@expo/vector-icons'
 import TextButton from './TextButton'
+import { submitEntry, removeEntry } from '../util/api'
 
 export default class AddEntry extends React.Component {
   //steps initialized to 0
@@ -60,7 +61,7 @@ export default class AddEntry extends React.Component {
      // Navigate to home
  
      // Save to "DB"
- 
+     submitEntry({key, entry})
      // Clear local notification
    }
 
@@ -71,6 +72,8 @@ export default class AddEntry extends React.Component {
      //route to home
 
      //update database
+     removeEntry(key)
+
    }
 
   render() {
