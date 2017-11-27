@@ -13,7 +13,6 @@ export default class App extends React.Component {
           <AddEntry />
         </View>
       </Provider>
-      
     );
   }
 }
