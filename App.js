@@ -30,7 +30,7 @@ const Tabs = TabNavigator({
   tabBarOptions: {
     activeTintColor: Platform.OS === 'ios' ? purple : white,
     style: {
-      height: 87,
+      height: 56,
       padding: 10,
       backgroundColor: Platform.OS === 'ios' ? white : purple,
       shadowRadius: 6,
@@ -44,10 +44,12 @@ const Tabs = TabNavigator({
   }
 })
 
+const store = createStore(reducer)
+
 export default class App extends React.Component {
   render() {
     return (
-      <Provider store={createStore(reducer)}>
+      <Provider store={store}>
         <View style={{flex: 1}}>
          
             <Tabs />
