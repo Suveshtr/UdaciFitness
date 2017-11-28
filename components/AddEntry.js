@@ -10,7 +10,7 @@ import {Ionicons } from '@expo/vector-icons'
 import TextButton from './TextButton'
 import { submitEntry, removeEntry } from '../util/api'
 import { addEntry } from '../actions'
-
+import { NavigationActions } from 'react-navigation'
 
 class AddEntry extends React.Component {
   //steps initialized to 0
@@ -65,7 +65,7 @@ class AddEntry extends React.Component {
      this.setState(() => ({ run: 0, bike: 0, swim: 0, sleep: 0, eat: 0 }))
  
      // Navigate to home
- 
+     this.toHome()
      // Save to "DB"
      submitEntry({key, entry})
      // Clear local notification
@@ -78,10 +78,16 @@ class AddEntry extends React.Component {
        [key]: getDailyReminderValue()
      }))
      //route to home
-
+     this.toHome()
      //update database
      removeEntry(key)
 
+   }
+
+   toHome = () => {
+     this.props.navigation.dispatch(NavigationActions.back({
+       key: 'AddEntry'
+     }))
    }
 
   render() {

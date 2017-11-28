@@ -3,6 +3,10 @@ import { View, Text, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import { white } from '../util/colors'
 import MetricCard from './MetricCard'
+import TextButton from './TextButton'
+import {addEntry } from '../actions'
+import { removeEntry } from '../util/api'
+import { timeToString, getDailyReminderValue } from '../util/helpers'
 
 class EntryDetails extends React.Component {
 
@@ -18,14 +22,41 @@ class EntryDetails extends React.Component {
   }
 
 
+  reset = () => {
+    const { entryId, dispatch } = this.props
+    
+    dispatch(addEntry({
+      [entryId]: timeToString() === entryId 
+        ? getDailyReminderValue()
+        : null
+    }))
+    
+    this.goBack()
+    //remove entry from local storage
+    removeEntry(entryId)
+  }
+
+  goBack = () => {
+    
+    const { navigation } = this.props
+    
+    navigation.goBack()
+  }
+
+  shouldComponentUpdate (nextProps) {
+    return nextProps.metrics !== null && !nextProps.metrics.today
+  }
+
   render () {
     const { metrics, entryId } = this.props
     return (
       <View style={styles.container}>
         <MetricCard metrics={metrics} />
-        <Text>
-          Entry Detail - {this.props.navigation.state.params.entryId}
-        </Text>
+        
+        <TextButton style={{margin:20}} onPress={this.reset}>
+          RESET
+        </TextButton>
+        
       </View>
     )
   }
