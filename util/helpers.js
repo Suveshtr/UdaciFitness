@@ -1,10 +1,18 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, AsyncStorage } from 'react-native'
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { red, orange, blue, lightPurp, pink, white } from './colors'
+import { Notifications, Permissions } from 'expo'
 
-import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
-import { white, red, orange, lightPurp, blue, pink } from './colors'
+const NOTIFICATION_KEY = 'UdaciFitness:notifications'
 
-const style = StyleSheet.create({
+export function getDailyReminderValue () {
+  return {
+    today: "👋 Don't forget to log your data today!"
+  }
+}
+
+const styles = StyleSheet.create({
   iconContainer: {
     padding: 5,
     borderRadius: 8,
@@ -12,8 +20,8 @@ const style = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 20,
-  }
+    marginRight: 20
+  },
 })
 
 export function getMetricMetaInfo (metric) {
@@ -26,10 +34,10 @@ export function getMetricMetaInfo (metric) {
       type: 'steppers',
       getIcon() {
         return (
-          <View style={[style.iconContainer, {backgroundColor: red}]} >
+          <View style={[styles.iconContainer, {backgroundColor: red}]}>
             <MaterialIcons
               name='directions-run'
-              color={'white'}
+              color={white}
               size={35}
             />
           </View>
@@ -44,10 +52,10 @@ export function getMetricMetaInfo (metric) {
       type: 'steppers',
       getIcon() {
         return (
-          <View style={[style.iconContainer, {backgroundColor: orange}]} >
+          <View style={[styles.iconContainer, {backgroundColor: orange}]}>
             <MaterialCommunityIcons
               name='bike'
-              color={'white'}
+              color={white}
               size={32}
             />
           </View>
@@ -62,10 +70,10 @@ export function getMetricMetaInfo (metric) {
       type: 'steppers',
       getIcon() {
         return (
-          <View style={[style.iconContainer, {backgroundColor: blue}]} >
+          <View style={[styles.iconContainer, {backgroundColor: blue}]}>
             <MaterialCommunityIcons
               name='swim'
-              color={'white'}
+              color={white}
               size={35}
             />
           </View>
@@ -80,10 +88,10 @@ export function getMetricMetaInfo (metric) {
       type: 'slider',
       getIcon() {
         return (
-          <View style={[style.iconContainer, {backgroundColor: lightPurp}]} >
+          <View style={[styles.iconContainer, {backgroundColor: lightPurp}]}>
             <FontAwesome
               name='bed'
-              color={'white'}
+              color={white}
               size={30}
             />
           </View>
@@ -98,10 +106,10 @@ export function getMetricMetaInfo (metric) {
       type: 'slider',
       getIcon() {
         return (
-          <View style={[style.iconContainer, {backgroundColor: pink}]} >
+          <View style={[styles.iconContainer, {backgroundColor: pink}]}>
             <MaterialCommunityIcons
               name='food'
-              color={'white'}
+              color={white}
               size={35}
             />
           </View>
@@ -114,6 +122,7 @@ export function getMetricMetaInfo (metric) {
     ? info
     : info[metric]
 }
+
 
 export function isBetween (num, x, y) {
   if (num >= x && num <= y) {
@@ -157,8 +166,53 @@ export function timeToString (time = Date.now()) {
   return todayUTC.toISOString().split('T')[0]
 }
 
-export function getDailyReminderValue() {
+export function clearLocalNotification () {
+  return AsyncStorage.removeItem(NOTIFICATION_KEY)
+    .then(Notifications.cancelAllScheduledNotificationsAsync)
+}
+
+function createNotification () {
   return {
-    today: "Don't forget to log your data today!"
+    title: 'Log your stats!',
+    body: "👋 don't forget to log your stats for today!",
+    ios: {
+      sound: true,
+    },
+    android: {
+      sound: true,
+      priority: 'high',
+      sticky: false,
+      vibrate: true,
+    }
   }
+}
+
+export function setLocalNotification () {
+  AsyncStorage.getItem(NOTIFICATION_KEY)
+    .then(JSON.parse)
+    .then((data) => {
+      if (data === null) {
+        Permissions.askAsync(Permissions.NOTIFICATIONS)
+          .then(({ status }) => {
+            if (status === 'granted') {
+              Notifications.cancelAllScheduledNotificationsAsync()
+
+              let tomorrow = new Date()
+              tomorrow.setDate(tomorrow.getDate() + 1)
+              tomorrow.setHours(20)
+              tomorrow.setMinutes(0)
+
+              Notifications.scheduleLocalNotificationAsync(
+                createNotification(),
+                {
+                  time: tomorrow,
+                  repeat: 'day',
+                }
+              )
+
+              AsyncStorage.setItem(NOTIFICATION_KEY, JSON.stringify(true))
+            }
+          })
+      }
+    })
 }
