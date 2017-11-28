@@ -13,20 +13,20 @@ export default class Live extends Component {
     bounceValue: new Animated.Value(1),
   }
   componentDidMount () {
-    // Permissions.getAsync(Permissions.LOCATION)
-    //   .then(({ status }) => {
-    //     console.log("ComponentDidMount", status)
-    //     if (status === 'granted') {
-    //       return this.setLocation()
-    //     }
-    //     this.setState(() => ({ status }))
-    //   })
-    //   .catch((error) => {
-    //     console.warn('Error getting Location permission: ', error)
+    Permissions.getAsync(Permissions.LOCATION)
+      .then(({ status }) => {
+        console.log("ComponentDidMount", status)
+        if (status === 'granted') {
+          return this.setLocation()
+        }
+        this.setState(() => ({ status }))
+      })
+      .catch((error) => {
+        console.warn('Error getting Location permission: ', error)
 
-    //     this.setState(() => ({ status: 'undetermined' }))
-    //   })
-    this.askPermission()
+        this.setState(() => ({ status: 'undetermined' }))
+      })
+    //this.askPermission()
   }
   askPermission = () => {
     Permissions.askAsync(Permissions.LOCATION)
